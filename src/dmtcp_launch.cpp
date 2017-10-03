@@ -174,14 +174,14 @@ static bool explicitSrun = false;
 static bool enableIB2TcpPlugin = false;
 static bool enableIBPlugin = false;
 
-static bool enableAllocPlugin = true;
-static bool enableDlPlugin = true;
-static bool enableIPCPlugin = true;
-static bool enableSvipcPlugin = true;
-static bool enableTimerPlugin = true;
+static bool enableAllocPlugin = false;
+static bool enableDlPlugin = false;
+static bool enableIPCPlugin = false;
+static bool enableSvipcPlugin = false;
+static bool enableTimerPlugin = false;
 
 #ifdef UNIQUE_CHECKPOINT_FILENAMES
-static bool enableUniqueCkptPlugin = true;
+static bool enableUniqueCkptPlugin = false;
 #else // ifdef UNIQUE_CHECKPOINT_FILENAMES
 static bool enableUniqueCkptPlugin = false;
 #endif // ifdef UNIQUE_CHECKPOINT_FILENAMES
@@ -190,7 +190,7 @@ static bool enableUniqueCkptPlugin = false;
 static bool enableLibDMTCP = true;
 
 // PID plugin must come last.
-static bool enablePIDPlugin = true;
+static bool enablePIDPlugin = false;
 
 static string thePortFile;
 
