@@ -48,6 +48,7 @@ bin_PROGRAMS = $(d_bindir)/dmtcp_launch \
 	       $(d_bindir)/dmtcp_restart \
 	       $(d_bindir)/dmtcp_nocheckpoint
 dmtcplib_PROGRAMS = $(d_libdir)/libdmtcp.so
+dmtcplib_LIBRARIES = $(d_libdir)/libdmtcp.a
 include_HEADERS = $(srcdir)/../include/dmtcp.h
 
 # headers:
@@ -109,6 +110,34 @@ __d_libdir__libdmtcp_so_SOURCES = dmtcpworker.cpp threadsync.cpp \
 		      dmtcpplugin.cpp popen.cpp syslogwrappers.cpp \
 		      dmtcp_dlsym.cpp plugininfo.cpp pluginmanager.cpp
 
+__d_libdir__libdmtcp_a_SOURCES = dmtcpworker.cpp threadsync.cpp \
+                                 coordinatorapi.cpp execwrappers.cpp \
+                                 signalwrappers.cpp \
+                                 terminal.cpp \
+                                 alarm.cpp \
+                                 threadwrappers.cpp \
+                                 miscwrappers.cpp ckptserializer.cpp writeckpt.cpp \
+                                 glibcsystem.cpp \
+                                 threadlist.cpp siginfo.cpp \
+                                 dmtcpplugin.cpp popen.cpp syslogwrappers.cpp \
+                                 dmtcp_dlsym.cpp plugininfo.cpp pluginmanager.cpp \
+                                 \
+                                 dmtcpmessagetypes.cpp  coordinatorapi.cpp \
+                                 workerstate.cpp \
+                                 dmtcp_dlsym.cpp \
+                                 uniquepid.cpp shareddata.cpp \
+                                 util_exec.cpp util_misc.cpp util_init.cpp \
+                                 jalibinterface.cpp processinfo.cpp procselfmaps.cpp \
+                                 \
+                                 $(jalibdir)/jalib.cpp $(jalibdir)/jassert.cpp \
+                                 $(jalibdir)/jbuffer.cpp $(jalibdir)/jfilesystem.cpp \
+                                 $(jalibdir)/jserialize.cpp $(jalibdir)/jsocket.cpp \
+                                 $(jalibdir)/jtimer.cpp $(jalibdir)/jalloc.cpp \
+                                 \
+                                 syscallsreal.c trampolines.cpp \
+                                 \
+                                 mtcp/restore_libc.c
+
 __d_libdir__libdmtcp_so_LDFLAGS = -shared -Xlinker -znow
 
 # Note that an ELF object uses libsyscallsreal.a or libnohijack.a
@@ -131,7 +160,7 @@ __d_bindir__dmtcp_launch_SOURCES = dmtcp_launch.cpp
 mtcp/libmtcp.a:
 	cd mtcp && ${MAKE} libmtcp.a
 
-install-libs: install-dmtcplibPROGRAMS
+install-libs: install-dmtcplibPROGRAMS install-dmtcplibLIBRARIES
 	(cd mtcp && ${MAKE} install-libs)
 	(cd plugin && ${MAKE} install-libs)
 
