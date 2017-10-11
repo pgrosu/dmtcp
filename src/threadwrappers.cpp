@@ -124,6 +124,7 @@ __clone(int (*fn)(void *arg),
 
   WRAPPER_EXECUTION_ENABLE_CKPT();
   return tid;
+return 0;
 }
 
 #if 0

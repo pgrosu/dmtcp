@@ -174,19 +174,19 @@ static bool explicitSrun = false;
 static bool enableIB2TcpPlugin = false;
 static bool enableIBPlugin = false;
 
-#ifndef STATIC_DMTCP
-static bool enableAllocPlugin = true;
-static bool enableDlPlugin = true;
-static bool enableIPCPlugin = true;
-static bool enableSvipcPlugin = true;
-static bool enableTimerPlugin = true;
-#else
+#ifdef STATIC_DMTCP
 static bool enableAllocPlugin = false;
 static bool enableDlPlugin = false;
 static bool enableIPCPlugin = false;
 static bool enableSvipcPlugin = false;
 static bool enableTimerPlugin = false;
-#endif
+#else
+static bool enableAllocPlugin = true;
+static bool enableDlPlugin = true;
+static bool enableIPCPlugin = true;
+static bool enableSvipcPlugin = true;
+static bool enableTimerPlugin = true;
+#endif // STATIC_DMTCP
 
 #ifdef UNIQUE_CHECKPOINT_FILENAMES
 static bool enableUniqueCkptPlugin = true;
@@ -198,11 +198,11 @@ static bool enableUniqueCkptPlugin = false;
 static bool enableLibDMTCP = true;
 
 // PID plugin must come last.
-#ifndef STATIC_DMTCP
-static bool enablePIDPlugin = true;
-#else
+#ifdef STATIC_DMTCP
 static bool enablePIDPlugin = false;
-#endif
+#else
+static bool enablePIDPlugin = true;
+#endif // STATIC_DMTCP
 
 static string thePortFile;
 
@@ -407,7 +407,7 @@ processArgs(int *orig_argc,
       (getenv(ENV_VAR_NAME_PORT) == NULL ||
        getenv(ENV_VAR_NAME_PORT)[0]== '\0') &&
       allowedModes != COORD_NEW) {
-    allowedModes = (allowedModes == COORD_ANY) ? COORD_NEW : allowedModes;
+    allowedModes = COORD_NEW;
     // Use static; some compilers save string const on local stack otherwise.
     static const char *default_port = STRINGIFY(DEFAULT_PORT);
     setenv(ENV_VAR_NAME_PORT, default_port, 1);

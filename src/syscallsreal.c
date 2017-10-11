@@ -243,11 +243,10 @@ static void *_real_func_addr[numLibcWrappers];
 static int dmtcp_wrappers_initialized = 0;
 
 #ifdef STATIC_DMTCP
-# define GET_FUNC_ADDR(name) \
-  _real_func_addr[ENUM(name)] = dmtcp_sdlsym(#name, (void *)&name, \
-                                             STATIC_PLUGIN_ID, name##addrs);
+#define GET_FUNC_ADDR(name) \
+  _real_func_addr[ENUM(name)] = dmtcp_sdlsym(#name, (void *)&name, STATIC_PLUGIN_ID, name##addrs);
 #else
-# define GET_FUNC_ADDR(name) \
+#define GET_FUNC_ADDR(name) \
   _real_func_addr[ENUM(name)] = dmtcp_dlsym(RTLD_NEXT, #name);
 #endif
 
@@ -268,8 +267,7 @@ initialize_libc_wrappers()
 
   /* On some arm machines, the newest pthread_create has version GLIBC_2.4 */
 #ifdef STATIC_DMTCP
-  void *addr = dmtcp_sdlsym("pthread_create", (void *)&pthread_create,
-                            STATIC_PLUGIN_ID, pthread_createaddrs);
+  void *addr = dmtcp_sdlsym("pthread_create", (void *)&pthread_create, STATIC_PLUGIN_ID, pthread_createaddrs);
 #else
   void *addr = dmtcp_dlvsym(RTLD_NEXT, "pthread_create", "GLIBC_2.4");
 #endif
@@ -421,7 +419,7 @@ _real_dlclose(void *handle)
 {
   REAL_FUNC_PASSTHROUGH_TYPED(int, dlclose) (handle);
 }
-#endif
+#endif // STATIC_DMTCP
 
 LIB_PRIVATE
 int
@@ -904,15 +902,15 @@ _real_sigignore(int sig)
   REAL_FUNC_PASSTHROUGH(sigignore) (sig);
 }
 
-#ifndef STATIC_DMTCP
 // See 'man sigpause':  signal.h defines two possible versions for sigpause.
+#ifndef STATIC_DMTCP
 LIB_PRIVATE
 int
 _real__sigpause(int __sig_or_mask, int __is_sig)
 {
   REAL_FUNC_PASSTHROUGH(__sigpause) (__sig_or_mask, __is_sig);
 }
-#endif
+#endif // STATIC_DMTCP
 
 LIB_PRIVATE
 int
