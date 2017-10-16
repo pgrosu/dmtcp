@@ -38,6 +38,10 @@
 #include "shareddata.h"
 #include "util.h"
 
+#ifdef STATIC_DMTCP
+# include "static_dmtcp.h"
+#endif // ifndef STATIC_DMTCP
+
 #define DEV_ZERO_DELETED_STR "/dev/zero (deleted)"
 #define DEV_NULL_DELETED_STR "/dev/null (deleted)"
 
@@ -47,8 +51,13 @@
 #define DELETED_FILE_SUFFIX  " (deleted)"
 
 
-#define _real_open           NEXT_FNC(open)
-#define _real_close          NEXT_FNC(close)
+#ifdef STATIC_DMTCP
+# define _real_open           NEXT_FNC_S_DEFAULT(open)
+# define _real_close          NEXT_FNC_S_DEFAULT(close)
+#else
+# define _real_open           NEXT_FNC(open)
+# define _real_close          NEXT_FNC(close)
+#endif // ifndef STATIC_DMTCP
 
 using namespace dmtcp;
 

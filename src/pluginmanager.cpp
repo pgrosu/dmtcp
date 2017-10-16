@@ -8,6 +8,10 @@
 #include "plugininfo.h"
 #include "util.h"
 
+#ifdef STATIC_DMTCP
+# include "static_dmtcp.h"
+#endif // ifndef STATIC_DMTCP
+
 static const char *firstRestartBarrier = "DMTCP::RESTART";
 
 static dmtcp::PluginManager *pluginManager = NULL;
@@ -69,7 +73,14 @@ dmtcp_initialize_plugin()
   dmtcp_register_plugin(CoordinatorAPI::pluginDescr());
   dmtcp_register_plugin(dmtcp_ProcessInfo_PluginDescr());
 
+#ifndef STATIC_DMTCP
   void (*fn)() = NEXT_FNC(dmtcp_initialize_plugin);
+#else
+  // FIXME: Call dmtcp_initialize_plugin using NEXT_FNC_S_DEFAULT
+  // dmtcp_initialize_plugin needs to be added to read_symbols_elf
+  void (*fn)() = NULL;
+#endif // ifndef STATIC_DMTCP
+
   if (fn != NULL) {
     (*fn)();
   }
