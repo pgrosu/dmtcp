@@ -114,6 +114,16 @@ if test "$use_jtiming" = "yes"; then
   AC_DEFINE([TIMING],[1],[Record timing information to stderr and jtimings.csv])
 fi
 
+AC_ARG_ENABLE([static],
+            [AS_HELP_STRING([--enable-static-dmtcp],
+                            [compile dmtcp for static linking])],
+            [use_static=$enableval],
+            [use_static=no])
+
+if test "$use_static" = "yes"; then
+  AC_DEFINE([STATIC_DMTCP],[1],[Compile DMTCP for static linking])
+fi
+
 AC_ARG_ENABLE([realtime_ckpt_signal],
             [AS_HELP_STRING([--enable-realtime-ckpt-signal],
                             [Use a realtime signal (SIGRTMAX - 2) instead of

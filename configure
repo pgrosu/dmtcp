@@ -800,6 +800,7 @@ enable_logging
 enable_debug
 enable_quiet
 enable_timing
+enable_static
 enable_realtime_ckpt_signal
 enable_unique_checkpoint_filenames
 enable_infiniband_support
@@ -1474,6 +1475,7 @@ Optional Features:
   --enable-timing         record checkpoint/restart timing information to
                           jtimings.csv, in working directory of
                           dmtcp_coordinator, and to stderr.
+  --enable-static-dmtcp   compile dmtcp for static linking
   --enable-realtime-ckpt-signal
                           Use a realtime signal (SIGRTMAX - 2) instead of the
                           default SIGUSR2 signal. The signal can be overridden
@@ -5036,6 +5038,20 @@ fi
 if test "$use_jtiming" = "yes"; then
 
 $as_echo "#define TIMING 1" >>confdefs.h
+
+fi
+
+# Check whether --enable-static was given.
+if test "${enable_static+set}" = set; then :
+  enableval=$enable_static; use_static=$enableval
+else
+  use_static=no
+fi
+
+
+if test "$use_static" = "yes"; then
+
+$as_echo "#define STATIC_DMTCP 1" >>confdefs.h
 
 fi
 
