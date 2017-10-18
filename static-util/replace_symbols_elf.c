@@ -97,12 +97,12 @@ int runGetOpt(int argc, char **argv, int *objIndex, char **objList,
     if (c == -1)
       break;
 
-    switch (c) {
-      printf("option %s", long_options[option_index].name);
-      if (optarg)
-        printf(" with arg %s", optarg);
-      printf("\n");
+    //printf("option %s", long_options[option_index].name);
+    //if (optarg)
+    //  printf(" with arg %s", optarg);
+    //printf("\n");
 
+    switch (c) {
     case 0: // object
       objList[(*objIndex)++] = strdup(optarg);
       break;

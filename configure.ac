@@ -32,12 +32,18 @@ AC_CONFIG_FILES([Makefile \
                  contrib/infiniband/Makefile \
                  plugin/Makefile \
                  src/Makefile \
+                 static-util/Makefile \
                  src/mtcp/Makefile \
                  src/plugin/Makefile \
                  include/dmtcp.h \
                  test/Makefile \
                  test/autotest_config.py \
                  test/plugin/Makefile])
+#bin_SCRIPTS = dmtcp_wrapper_symbols dmtcp_static_gen dmtcp_lib_symbols
+AC_CONFIG_LINKS([bin/dmtcp_wrapper_symbols:static-util/dmtcp_wrapper_symbols])
+AC_CONFIG_LINKS([bin/dmtcp_static_gen:static-util/dmtcp_static_gen])
+AC_CONFIG_LINKS([bin/dmtcp_lib_symbols:static-util/dmtcp_lib_symbols])
+
 #AC_CONFIG_FILES([test/credentials/Makefile])
 
 #AC_CONFIG_SUBDIRS([dmtcp])
