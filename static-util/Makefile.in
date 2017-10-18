@@ -126,11 +126,11 @@ am__v_P_1 = :
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 =
+am__v_GEN_1 = 
 AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
-am__v_at_1 =
+am__v_at_1 = 
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -140,13 +140,13 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 AM_V_CC = $(am__v_CC_@AM_V@)
 am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
 am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 =
+am__v_CC_1 = 
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 =
+am__v_CCLD_1 = 
 SOURCES = $(__d_bindir__dmtcp_replace_symbols_elf_SOURCES)
 DIST_SOURCES = $(__d_bindir__dmtcp_replace_symbols_elf_SOURCES)
 am__can_run_installinfo = \
@@ -336,7 +336,7 @@ top_srcdir = @top_srcdir@
 # TODO(kapil): Add 'subdir-objects after automake 1.16 has been released.
 AUTOMAKE_OPTIONS = foreign
 dmtcpincludedir = $(top_srcdir)/include
-PICFLAGS =
+PICFLAGS = 
 AM_CFLAGS = $(PICFLAGS)
 AM_CXXFLAGS = $(PICFLAGS)
 AM_LDFLAGS = $(PICFLAGS)
@@ -347,7 +347,7 @@ AM_LDFLAGS = $(PICFLAGS)
 
 #HEADERS
 #set the include path found by configure
-AM_CPPFLAGS =
+AM_CPPFLAGS = 
 
 # headers:
 nobase_noinst_HEADERS = util.h
