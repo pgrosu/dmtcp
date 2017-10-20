@@ -1,0 +1,55 @@
+#!/usr/bin/python3
+import os
+
+d_dir='~/dmtcp'
+su_dir='~/dmtcp/static-util'
+
+glibc='glibc-2.26'
+gbuild='glibc-build'
+
+tmp_dir='/tmp/static_dmtcp_tmp'
+
+print('Hello World;')
+
+# Makedir /dmtcp_tmp
+try:
+    os.mkdir(tmp_dir)
+except OSError as e:
+    pass
+
+# Build glibc with --enable-static-nss
+if not os.path.exists(tmp_dir+'/'+glibc):
+    os.system('cp {0}/{1}.tar.gz {2}; tar -xvzf {2}/{1}.tar.gz --one-top-level={2}'.format(su_dir, glibc, tmp_dir))
+
+
+dir_to_check='{0}/{1}'.format(tmp_dir, gbuild) #/tmp/static_dmtcp_tmp/glibc-build
+if not os.path.exists(dir_to_check):
+    os.mkdir(dir_to_check)
+    os.system('cd {2}; {0}/glibc-2.26/configure --prefix={2} --enable-static-nss; make -j'.format(tmp_dir, glibc, dir_to_check))
+
+# Bring up libc.a + libpthread.a
+os.system('cp {0}/glibc-build/libc.a {0}/glibc-build/nptl/libpthread.a {0}'.format(tmp_dir))
+
+# Modify libc.a + libpthread.a
+if os.path.exists(tmp_dir+'/libc.a'):
+    # Extract
+    os.system('cd {0}; ar -xvf {0}/libc.a'.format(tmp_dir))
+    # Modify
+    # Copy over
+else:
+    perror("No libc.a found")
+    exit(1)
+
+if os.path.exists(tmp_dir+'/libpthread.a'):
+    # Extract
+    os.system('cd {0}; ar -xvf {0}/libpthread.a'.format(tmp_dir))
+    # Modify
+    # Copy over
+else:
+    perror("No libpthread.a found")
+    exit(1)
+
+exit(1)
+
+# Bring in dmtcp.a
+os.system('rm -f *.o *.a; cp '+d_dir+'/libs/*.a '+su_dir+';')
