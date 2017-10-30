@@ -2,7 +2,8 @@
 import os
 
 d_dir='~/dmtcp'
-su_dir='~/dmtcp/static-util'
+su_dir=d_dir+'/static-util'
+d_bin_dir=d_dir+'/bin'
 
 glibc='glibc-2.26'
 gbuild='glibc-build'
@@ -11,11 +12,15 @@ tmp_dir='/tmp/static_dmtcp_tmp'
 
 print('Hello World;')
 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 # Makedir /dmtcp_tmp
 try:
     os.mkdir(tmp_dir)
 except OSError as e:
     pass
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 # Build glibc with --enable-static-nss
 if not os.path.exists(tmp_dir+'/'+glibc):
@@ -27,27 +32,44 @@ if not os.path.exists(dir_to_check):
     os.mkdir(dir_to_check)
     os.system('cd {2}; {0}/glibc-2.26/configure --prefix={2} --enable-static-nss; make -j'.format(tmp_dir, glibc, dir_to_check))
 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 # Bring up libc.a + libpthread.a
 os.system('cp {0}/glibc-build/libc.a {0}/glibc-build/nptl/libpthread.a {0}'.format(tmp_dir))
 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 # Modify libc.a + libpthread.a
+
+# libc.a
 if os.path.exists(tmp_dir+'/libc.a'):
     # Extract
     os.system('cd {0}; ar -xvf {0}/libc.a'.format(tmp_dir))
     # Modify
     # Copy over
+    # Remove .o's
+    os.system('cd {0}; rm -f *.o'.format(tmp_dir))
 else:
     perror("No libc.a found")
     exit(1)
 
+# libpthread.a
 if os.path.exists(tmp_dir+'/libpthread.a'):
     # Extract
     os.system('cd {0}; ar -xvf {0}/libpthread.a'.format(tmp_dir))
     # Modify
     # Copy over
+    # Remove .o's
+    os.system('cd {0}; rm -f *.o'.format(tmp_dir))
 else:
     perror("No libpthread.a found")
     exit(1)
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# Generate header and c files from symbols!
+# *** *** dmtcp_wrapper_symbols has HARDCODED d_dir!!!
+os.path('cd {0}; {1}/dmtcp_wrapper_symbols'.format(tmp_dir, d_bin_dir))
 
 exit(1)
 

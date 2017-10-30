@@ -4950,6 +4950,8 @@ ac_config_links="$ac_config_links bin/dmtcp_static_gen:static-util/dmtcp_static_
 
 ac_config_links="$ac_config_links bin/dmtcp_lib_symbols:static-util/dmtcp_lib_symbols"
 
+ac_config_links="$ac_config_links bin/dmtcp_ld:static-util/dmtcp_ld"
+
 
 #AC_CONFIG_FILES([test/credentials/Makefile])
 
@@ -8205,6 +8207,7 @@ do
     "bin/dmtcp_wrapper_symbols") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_wrapper_symbols:static-util/dmtcp_wrapper_symbols" ;;
     "bin/dmtcp_static_gen") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_static_gen:static-util/dmtcp_static_gen" ;;
     "bin/dmtcp_lib_symbols") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_lib_symbols:static-util/dmtcp_lib_symbols" ;;
+    "bin/dmtcp_ld") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_ld:static-util/dmtcp_ld" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

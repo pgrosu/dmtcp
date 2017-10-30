@@ -43,6 +43,7 @@ AC_CONFIG_FILES([Makefile \
 AC_CONFIG_LINKS([bin/dmtcp_wrapper_symbols:static-util/dmtcp_wrapper_symbols])
 AC_CONFIG_LINKS([bin/dmtcp_static_gen:static-util/dmtcp_static_gen])
 AC_CONFIG_LINKS([bin/dmtcp_lib_symbols:static-util/dmtcp_lib_symbols])
+AC_CONFIG_LINKS([bin/dmtcp_ld:static-util/dmtcp_ld])
 
 #AC_CONFIG_FILES([test/credentials/Makefile])
 
