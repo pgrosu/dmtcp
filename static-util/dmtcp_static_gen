@@ -8,13 +8,14 @@ from elftools.elf.sections import Section
 from elftools.elf.sections import SymbolTableSection
 from builtins import any
 
+header_name = 'static_dmtcp'
 
 def create_dmtcp_h_file_base():
-    if os.path.exists('./DMTCP.h'):
+    if os.path.exists('./'+header_name):
         return
 
     # Open c file
-    with open('DMTCP.h', 'w') as fo:
+    with open(header_name+'.h', 'w') as fo:
 
         headers1 = (
             '#ifndef __DMTCP_H_\n'
@@ -105,7 +106,7 @@ def create_dmtcp_h_file(staticid):
     # Open c file
     with open('DMTCP' + staticid + '.h', 'w') as fo:
 
-        headers1 = ('#include "DMTCP.h"\n'
+        headers1 = ('#include "' + header_name + '.h"\n'
                     '#ifndef __DMTCP' + staticid + '_H_\n'
                     '#define __DMTCP' + staticid + '_H_\n'
                     '#ifdef STATIC_PLUGIN_ID\n'
@@ -118,7 +119,7 @@ def create_dmtcp_h_file(staticid):
 
 def create_dmtcp_c_file(numheaders):
     with open('dlsym_plt_DMTCP.c', 'w') as fo:
-        fo.write('#include "DMTCP.h"\n')
+        fo.write('#include "'+header_name+'.h"\n')
         #for staticid in range(1,numheaders+1):
         #    fo.write('#include "DMTCP'+str(staticid)+'.h"\n')
         fo.write('#ifdef STATIC_PLUGIN_ID\n'
@@ -172,7 +173,7 @@ def finally_write_dmtcp_dlsym():
 
 
 def finally_write_h_file(staticid):
-    with open('DMTCP' + staticid + '.h', 'a') as fo:
+    with open(header_name + staticid + '.h', 'a') as fo:
         fo.write('#endif //__DMTCP' + staticid + '_H_\n')
 
 
@@ -188,7 +189,7 @@ def closecurl(f):
 
 # FOR EACH SYMBOL
 def append_addrs_h_file(symbolToFind, staticid):
-    fo = open('DMTCP' + staticid + '.h', 'a')
+    fo = open(header_name + staticid + '.h', 'a')
 
     fo.write('extern long int ' + symbolToFind + 'addrs[100];\n')
 

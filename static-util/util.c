@@ -68,6 +68,7 @@ void read_metadata(char *file, char *addr, size_t size, off_t offset) {
     exit(1);
   }
   readall(fd, addr, size);
+  close(fd);
 }
 void write_metadata(char *file, char *addr, size_t size, off_t offset) {
   int fd = open(file, O_WRONLY);
@@ -78,4 +79,5 @@ void write_metadata(char *file, char *addr, size_t size, off_t offset) {
     exit(1);
   }
   writeall(fd, addr, size);
+  close(fd);
 }

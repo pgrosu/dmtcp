@@ -117,7 +117,7 @@ am___d_bindir__dmtcp_replace_symbols_elf_OBJECTS =  \
 	replace_symbols_elf.$(OBJEXT) util.$(OBJEXT)
 __d_bindir__dmtcp_replace_symbols_elf_OBJECTS =  \
 	$(am___d_bindir__dmtcp_replace_symbols_elf_OBJECTS)
-__d_bindir__dmtcp_replace_symbols_elf_LDADD = $(LDADD)
+__d_bindir__dmtcp_replace_symbols_elf_DEPENDENCIES =
 am__dirstamp = $(am__leading_dot)dirstamp
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -352,6 +352,7 @@ AM_CPPFLAGS =
 # headers:
 nobase_noinst_HEADERS = util.h
 __d_bindir__dmtcp_replace_symbols_elf_SOURCES = replace_symbols_elf.c util.c
+__d_bindir__dmtcp_replace_symbols_elf_LDADD =
 all: all-am
 
 .SUFFIXES:

@@ -729,7 +729,7 @@ int main(int argc, char **argv) {
   if (debug_func)
     printf("main\n");
   int objIndex = 0;
-  char **objList = malloc(300 * sizeof(char *));
+  char **objList = malloc(3000 * sizeof(char *));
 
   int singleSymbolIndex = 0;
   char **singleSymbolList =

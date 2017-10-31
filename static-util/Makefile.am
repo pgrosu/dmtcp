@@ -41,6 +41,7 @@ bin_PROGRAMS = $(d_bindir)/dmtcp_replace_symbols_elf
 nobase_noinst_HEADERS = util.h
 
 __d_bindir__dmtcp_replace_symbols_elf_SOURCES = replace_symbols_elf.c util.c
+__d_bindir__dmtcp_replace_symbols_elf_LDADD =
 #__d_bindir__dmtcp_wrapper_symbols_SOURCES = dmtcp_wrapper_symbols
 #__d_bindir__dmtcp_static_gen_SOURCES = dmtcp_static_gen
 #__d_bindir__dmtcp_lib_symbols_SOURCES = dmtcp_lib_symbols
