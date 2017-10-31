@@ -122,7 +122,7 @@ __d_libdir__libdmtcp_a_SOURCES = dmtcpworker.cpp threadsync.cpp \
                                  dmtcpplugin.cpp popen.cpp syslogwrappers.cpp \
                                  dmtcp_dlsym.cpp plugininfo.cpp pluginmanager.cpp \
                                  \
-                                 dmtcpmessagetypes.cpp  coordinatorapi.cpp \
+                                 dmtcpmessagetypes.cpp \
                                  workerstate.cpp \
                                  dmtcp_dlsym.cpp \
                                  uniquepid.cpp shareddata.cpp \

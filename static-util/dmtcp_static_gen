@@ -264,13 +264,13 @@ def append_all_library_wrappers_dmtcp(lib_plugin_id, l_object_files):
 # ./addrs/<symbol>__dmtcp.addr
 
 
-def sort_all_library_wrappers_dmtcp():
+def sort_all_library_wrappers_dmtcp(nz_file):
     l_lines = []
-    with open('all_library_wrappers_dmtcp.nz', 'r') as f:
+    with open(nz_file, 'r') as f:
         l_lines = f.readlines()
         l_lines.sort()
     print(l_lines)
-    with open('all_library_wrappers_dmtcp.nz', 'w') as f:
+    with open(nz_file, 'w') as f:
         for line in l_lines:
             f.write(line)
 
@@ -362,7 +362,7 @@ def process_file(filename, symbolToFind):
           fileToWrite + "\n\n")
 
 
-def faster_process_file(filename, list_of_symbolToFind):
+def faster_process_file(filename, list_of_symbolToFind, nz_file):
     dictionary = dict()
     actualFunc = ""
     listToWrite = []
@@ -397,9 +397,10 @@ def faster_process_file(filename, list_of_symbolToFind):
     if not os.path.exists('./addrs'):
         os.mkdir('addrs')
     cwd = os.getcwd() + r'/addrs/'
+    print(cwd)
 
     num_libs = 0
-    with open('all_library_wrappers_dmtcp.nz', 'r') as f:
+    with open(nz_file, 'r') as f:
         lines = f.readlines()
         num_libs = len(lines)
     print(num_libs)
@@ -498,19 +499,20 @@ if __name__ == '__main__':
     elif sys.argv[1] == '-lib':
         print(str(int(sys.argv[2]) - 1))
         append_all_library_wrappers_dmtcp(
-            str(int(sys.argv[2]) - 1), sys.argv[3:])
+                str(int(sys.argv[2]) - 1), sys.argv[3:])
 
     elif sys.argv[1] != None and sys.argv[2] != None:
         # sort all_library_wrappers_dmtcp.nz here
-        sort_all_library_wrappers_dmtcp()
+        #if sys.argv[3] != None:
+        #    os.chdir(sys.argv[3])
+        sort_all_library_wrappers_dmtcp(sys.argv[3])
 
         list_of_symbolToFind = []
-        for stf in sys.argv[2:]:
-            with open(stf, 'r') as f:
-                l_lines = f.readlines()
-                list_of_symbolToFind.extend(
-                    [sym.strip() for sym in l_lines if sym.strip() != ''])
-        faster_process_file(sys.argv[1], list_of_symbolToFind)
+        with open(sys.argv[2], 'r') as f:
+            l_lines = f.readlines()
+            list_of_symbolToFind.extend(
+                [sym.strip() for sym in l_lines if sym.strip() != ''])
+        faster_process_file(sys.argv[1], list_of_symbolToFind, sys.argv[3])
 
     else:
         print("***WRONG SYNTAX FOR CALLING elf.py")

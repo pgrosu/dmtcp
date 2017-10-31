@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 
-d_dir='~/dmtcp'
+d_dir=os.path.expanduser('~/dmtcp')
 su_dir=d_dir+'/static-util'
 d_bin_dir=d_dir+'/bin'
 
@@ -15,10 +15,21 @@ bad_cache_dir=tmp_dir+'/badcache'
 print('Hello World;')
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+                            # # # ROUND 1 # # #
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 # Temporary Hack
+if not os.path.isfile((su_dir+'/QWERASDF')):
+    os.system("cd {0} && ./configure 'CFLAGS=-g3 -O0 -DSTATIC_DMTCP=1' 'CXXFLAGS=-g3 -O0 -DSTATIC_DMTCP=1' && make -j && echo TMPHACK > {1}/QWERASDF".format(d_dir, su_dir))
+
 if not os.path.exists(d_bin_dir+'/dmtcp_replace_symbols_elf'):
     os.system('make -C {0}'.format(su_dir))
+
+os.system('rm -rf {0}/*.a {0}/*.nz {0}/*.o'.format(tmp_dir))
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -39,6 +50,51 @@ except OSError as e:
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+# Helper Functions
+def modify_library(lib_name, plugin_num=0):
+    if os.path.exists(tmp_dir+'/'+lib_name):
+
+        # Extract
+        os.system('cd {1}; ar -xvf {0}/{2}'.format(tmp_dir, bad_cache_dir, lib_name))
+
+        # Modify + ar r
+
+        if plugin_num is 0:
+            #os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s `cat ../dmtcp.wrapper.sym` --singlestr=__dmtcp_plt --only_undef; ar r {2}/{3} *.o'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -c __clone --completestr=__clone__dmtcp_plt ; ar r {2}/{3} *.o'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name))
+
+        # IF THERE IS A PLUGIN NUMBER!!! (more replacements)
+        if plugin_num is not 0:
+
+            # _wrap__dmtcp_? (only_def)
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s `cat ../dmtcp.wrapper.sym` __sigpause __xpg_sigpause --singlestr=_wrap__dmtcp_{4} --only_def;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+
+            # __dmtcp_plt (only_undef)
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s `cat ../dmtcp.wrapper.sym` __sigpause __ xpg_sigpause --singlestr=__dmtcp_plt --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name))
+
+            # dmtcp_ special cases
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o signalwrappers.o -c _real__sig_pause --completestr=__sigpause --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o signalwrappers.o -c _real_sig_pause --completestr=__xpg_sigpause --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+
+            # _real_ (both def and undef)
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -f _real_ --startwithstr=_s{4};'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+
+            # dmtcp_ special cases 2
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s dmtcp_gettid dmtcp_tkill dmtcp_tgkill --singlestr=_s{4};'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+
+            os.system('rm -f {1}/{0}; ar cru {1}/{0} {1}/*.o'.format(lib_name, tmp_dir))
+
+        # Remove .o's
+        os.system('cd {0}; rm -f *.o'.format(bad_cache_dir))
+    else:
+        perror("No {0} found".format(lib_name))
+        exit(1)
+
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 # Build glibc with --enable-static-nss
 if not os.path.exists(tmp_dir+'/'+glibc):
     os.system('cp {0}/{1}.tar.gz {2}; tar -xvzf {2}/{1}.tar.gz --one-top-level={2}'.format(su_dir, glibc, tmp_dir))
@@ -48,11 +104,6 @@ dir_to_check='{0}/{1}'.format(tmp_dir, gbuild) #/tmp/static_dmtcp_tmp/glibc-buil
 if not os.path.exists(dir_to_check):
     os.mkdir(dir_to_check)
     os.system('cd {2}; {0}/glibc-2.26/configure --prefix={2} --enable-static-nss; make -j'.format(tmp_dir, glibc, dir_to_check))
-
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-# Bring up libc.a + libpthread.a
-os.system('cp {0}/glibc-build/libc.a {0}/glibc-build/nptl/libpthread.a {0}'.format(tmp_dir))
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -68,46 +119,54 @@ if os.path.exists(tmp_dir+'/dmtcp.wrapper.sym'):
     os.system('cd {0}; python3 {1}/dmtcp_static_gen -hfile dmtcp.wrapper.sym'.format(tmp_dir, d_bin_dir))
     os.system('cd {0}; python3 {1}/dmtcp_static_gen -cfile dmtcp.wrapper.sym'.format(tmp_dir, d_bin_dir))
     # generate the .o's for c file
-    os.system('cd {0}; gcc -c -g -O0 dlsym_plt_DMTCP.c -o {1}/dlsym_plt_DMTCP.o'.format(tmp_dir, cache_dir))
+    os.system('cd {0}; gcc -c -g -O0 dlsym_plt_DMTCP.c -o {0}/dlsym_plt_DMTCP.o'.format(tmp_dir))
 else:
     perror("No dmtcp.wrapper.sym found")
     exit(1)
 
-# 3) replace using the symbols for libc.a + libpthread.a
+# 3) replace using the symbols
 # BELOW
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+# Bring up libc.a + libpthread.a
+os.system('cp {0}/glibc-build/libc.a {0}/glibc-build/nptl/libpthread.a {0}'.format(tmp_dir))
+
 # Modify libc.a + libpthread.a
 
-# libc.a
-if os.path.exists(tmp_dir+'/libc.a'):
-    # Extract
-    os.system('cd {1}; ar -xvf {0}/libc.a'.format(tmp_dir, bad_cache_dir))
-    # Modify + ar r
-    os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s `cat ../dmtcp.wrapper.sym` --singlestr=__dmtcp_plt --only_undef; ar r {2}/libc.a *.o'.format(d_bin_dir, bad_cache_dir, tmp_dir))
-    # Copy over
-    # Remove .o's
-    os.system('cd {0}; rm -f *.o'.format(bad_cache_dir))
-else:
-    perror("No libc.a found")
-    exit(1)
+# # libc.a
+modify_library('libc.a')
 
-# libpthread.a
-if os.path.exists(tmp_dir+'/libpthread.a'):
-    # Extract
-    os.system('cd {1}; ar -xvf {0}/libpthread.a'.format(tmp_dir, bad_cache_dir))
-    # Modify + ar r
-    os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s `cat ../dmtcp.wrapper.sym` --singlestr=__dmtcp_plt --only_undef; ar r {2}/libpthread.a *.o'.format(d_bin_dir, bad_cache_dir, tmp_dir))
-    # Remove .o's
-    os.system('cd {0}; rm -f *.o'.format(bad_cache_dir))
-else:
-    perror("No libpthread.a found")
-    exit(1)
+# # libpthread.a
+modify_library('libpthread.a')
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-exit(1)
+# Bring up libdmtcp.a
+os.system('cp {1}/lib/dmtcp/libdmtcp.a {0}'.format(tmp_dir, d_dir))
 
-# Bring in dmtcp.a
-os.system('rm -f *.o *.a; cp '+d_dir+'/libs/*.a '+su_dir+';')
+# Modify libdmtcp.a
+
+# # libpthread.a
+modify_library('libdmtcp.a', 1)
+
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+                            # # # ROUND 2 # # #
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# Not needed yet, but for future plugins...
+# # python3 elf.py -lib 1 OBJFILES_LIBDMTCP
+
+# LINK!!!
+os.system('g++ -g -O0 -static -static-libgcc -Wl,-u,dmtcp_initialize -I{0} {1}/save_rest_regs.s ./main.o -Wl,--whole-archive {0}/libdmtcp.a -Wl,--no-whole-archive -ldl -lrt {0}/libpthread.a {0}/libc.a'.format(tmp_dir, su_dir))
+#os.system('g++ -g -O0 -static -static-libgcc -Wl,-u,dmtcp_initialize -I{0} {1}/save_rest_regs.s ./main.o {0}/dlsym_plt_DMTCP.o -Wl,--whole-archive {0}/libdmtcp.a -Wl,--no-whole-archive -ldl -lrt {0}/libpthread.a {0}/libc.a'.format(tmp_dir, su_dir))
+#os.system('g++ -g -O0 -static -static-libgcc -Wl,-u,dmtcp_initialize -I{0} ./main.o {1}/save_rest_regs.s {0}/dlsym_plt_DMTCP.o {0}/libdmtcp.a -Wl,--no-whole-archive -ldl -lrt {0}/libpthread.a {0}/libc.a'.format(tmp_dir, su_dir))
+
+# Write out addrs
+#os.system('cd {2}; ar -xvf {1}/libdmtcp.a; python3 {0}/dmtcp_static_gen -lib 1 `ls *.o`; rm *.o; cp *.nz {1}; rm *.nz'.format(d_bin_dir, tmp_dir, bad_cache_dir))
+#os.system('python3 {0}/dmtcp_static_gen `pwd`/a.out {1}/dmtcp.wrapper.sym {1}/all_library_wrappers_dmtcp.nz'.format(d_bin_dir, tmp_dir))
