@@ -110,6 +110,18 @@ __d_libdir__libdmtcp_so_SOURCES = dmtcpworker.cpp threadsync.cpp \
 		      dmtcpplugin.cpp popen.cpp syslogwrappers.cpp \
 		      dmtcp_dlsym.cpp plugininfo.cpp pluginmanager.cpp
 
+#####__d_libdir__libdmtcp_a_SOURCES = dmtcpworker.cpp threadsync.cpp \
+#####                                 coordinatorapi.cpp execwrappers.cpp \
+#####                                 signalwrappers.cpp \
+#####                                 terminal.cpp \
+#####                                 alarm.cpp \
+#####                                 threadwrappers.cpp \
+#####                                 miscwrappers.cpp ckptserializer.cpp writeckpt.cpp \
+#####                                 glibcsystem.cpp \
+#####                                 threadlist.cpp siginfo.cpp \
+#####                                 dmtcpplugin.cpp popen.cpp syslogwrappers.cpp \
+#####                                 dmtcp_dlsym.cpp plugininfo.cpp pluginmanager.cpp
+
 __d_libdir__libdmtcp_a_SOURCES = dmtcpworker.cpp threadsync.cpp \
                                  coordinatorapi.cpp execwrappers.cpp \
                                  signalwrappers.cpp \
@@ -124,7 +136,6 @@ __d_libdir__libdmtcp_a_SOURCES = dmtcpworker.cpp threadsync.cpp \
                                  \
                                  dmtcpmessagetypes.cpp \
                                  workerstate.cpp \
-                                 dmtcp_dlsym.cpp \
                                  uniquepid.cpp shareddata.cpp \
                                  util_exec.cpp util_misc.cpp util_init.cpp \
                                  jalibinterface.cpp processinfo.cpp procselfmaps.cpp \

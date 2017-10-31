@@ -61,31 +61,33 @@ def modify_library(lib_name, plugin_num=0):
 
         if plugin_num is 0:
             #os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s `cat ../dmtcp.wrapper.sym` --singlestr=__dmtcp_plt --only_undef; ar r {2}/{3} *.o'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name))
-            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -c __clone --completestr=__clone__dmtcp_plt ; ar r {2}/{3} *.o'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o {1}/*.o -c __clone --completestr=__clone__dmtcp_plt;'.format(d_bin_dir, bad_cache_dir))
 
         # IF THERE IS A PLUGIN NUMBER!!! (more replacements)
         if plugin_num is not 0:
 
             # _wrap__dmtcp_? (only_def)
-            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s `cat ../dmtcp.wrapper.sym` __sigpause __xpg_sigpause --singlestr=_wrap__dmtcp_{4} --only_def;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o {1}/*.o -s `cat ../dmtcp.wrapper.sym` __sigpause __xpg_sigpause --singlestr=_wrap__dmtcp_{4} --only_def;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
 
             # __dmtcp_plt (only_undef)
-            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s `cat ../dmtcp.wrapper.sym` __sigpause __ xpg_sigpause --singlestr=__dmtcp_plt --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o {1}/*.o -s `cat ../dmtcp.wrapper.sym` __sigpause __ xpg_sigpause --singlestr=__dmtcp_plt --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name))
 
             # dmtcp_ special cases
-            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o signalwrappers.o -c _real__sig_pause --completestr=__sigpause --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
-            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o signalwrappers.o -c _real_sig_pause --completestr=__xpg_sigpause --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o {1}/signalwrappers.o -c _real__sigpause --completestr=__sigpause --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o {1}/signalwrappers.o -c _real_sigpause --completestr=__xpg_sigpause --only_undef;'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
 
             # _real_ (both def and undef)
-            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -f _real_ --startwithstr=_s{4};'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o {1}/*.o -f _real_ --startwithstr=_s{4};'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
 
             # dmtcp_ special cases 2
-            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o *.o -s dmtcp_gettid dmtcp_tkill dmtcp_tgkill --singlestr=_s{4};'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
+            os.system('cd {1}; {0}/dmtcp_replace_symbols_elf -o {1}/*.o -s dmtcp_gettid dmtcp_tkill dmtcp_tgkill --singlestr=_s{4};'.format(d_bin_dir, bad_cache_dir, tmp_dir, lib_name, plugin_num))
 
-            os.system('rm -f {1}/{0}; ar cru {1}/{0} {1}/*.o'.format(lib_name, tmp_dir))
+
+        # Create new .a
+        os.system('rm -f {1}/{0}; ar cru {1}/{0} {2}/*.o'.format(lib_name, tmp_dir, bad_cache_dir))
 
         # Remove .o's
-        os.system('cd {0}; rm -f *.o'.format(bad_cache_dir))
+        os.system('cd {0}; rm -f *.o *.a'.format(bad_cache_dir))
     else:
         perror("No {0} found".format(lib_name))
         exit(1)
@@ -119,7 +121,7 @@ if os.path.exists(tmp_dir+'/dmtcp.wrapper.sym'):
     os.system('cd {0}; python3 {1}/dmtcp_static_gen -hfile dmtcp.wrapper.sym'.format(tmp_dir, d_bin_dir))
     os.system('cd {0}; python3 {1}/dmtcp_static_gen -cfile dmtcp.wrapper.sym'.format(tmp_dir, d_bin_dir))
     # generate the .o's for c file
-    os.system('cd {0}; gcc -c -g -O0 dlsym_plt_DMTCP.c -o {0}/dlsym_plt_DMTCP.o'.format(tmp_dir))
+    #os.system('cd {0}; gcc -c -g -O0 {0}/dlsym_plt_DMTCP.c -o {0}/dlsym_plt_DMTCP.o'.format(tmp_dir))
 else:
     perror("No dmtcp.wrapper.sym found")
     exit(1)
@@ -163,10 +165,10 @@ modify_library('libdmtcp.a', 1)
 # # python3 elf.py -lib 1 OBJFILES_LIBDMTCP
 
 # LINK!!!
-os.system('g++ -g -O0 -static -static-libgcc -Wl,-u,dmtcp_initialize -I{0} {1}/save_rest_regs.s ./main.o -Wl,--whole-archive {0}/libdmtcp.a -Wl,--no-whole-archive -ldl -lrt {0}/libpthread.a {0}/libc.a'.format(tmp_dir, su_dir))
-#os.system('g++ -g -O0 -static -static-libgcc -Wl,-u,dmtcp_initialize -I{0} {1}/save_rest_regs.s ./main.o {0}/dlsym_plt_DMTCP.o -Wl,--whole-archive {0}/libdmtcp.a -Wl,--no-whole-archive -ldl -lrt {0}/libpthread.a {0}/libc.a'.format(tmp_dir, su_dir))
-#os.system('g++ -g -O0 -static -static-libgcc -Wl,-u,dmtcp_initialize -I{0} ./main.o {1}/save_rest_regs.s {0}/dlsym_plt_DMTCP.o {0}/libdmtcp.a -Wl,--no-whole-archive -ldl -lrt {0}/libpthread.a {0}/libc.a'.format(tmp_dir, su_dir))
+os.system('cd {0}; gcc -c -g -O0 dlsym_plt_DMTCP.c -o {0}/dlsym_plt_DMTCP.o'.format(tmp_dir))
+#os.system('g++ -g -O0 -static -static-libgcc -Wl,-u,dmtcp_initialize -I{0} {1}/save_rest_regs.s ./main.o {0}/dlsym_plt_DMTCP.o -Wl,--whole-archive {0}/libdmtcp.a -Wl,--no-whole-archive {2}/src/restore_libc.o -ldl -lrt {0}/libpthread.a {0}/libc.a'.format(tmp_dir, su_dir, d_dir))
+os.system('g++ -g -O0 -static -static-libgcc -Wl,-u,dmtcp_initialize -I{0} {1}/save_rest_regs.s ./main.o {0}/dlsym_plt_DMTCP.o -Wl,--whole-archive {0}/libdmtcp.a -Wl,--no-whole-archive -ldl -lrt {0}/libpthread.a {0}/libc.a'.format(tmp_dir, su_dir, d_dir))
 
 # Write out addrs
-#os.system('cd {2}; ar -xvf {1}/libdmtcp.a; python3 {0}/dmtcp_static_gen -lib 1 `ls *.o`; rm *.o; cp *.nz {1}; rm *.nz'.format(d_bin_dir, tmp_dir, bad_cache_dir))
-#os.system('python3 {0}/dmtcp_static_gen `pwd`/a.out {1}/dmtcp.wrapper.sym {1}/all_library_wrappers_dmtcp.nz'.format(d_bin_dir, tmp_dir))
+os.system('cd {2}; ar -xvf {1}/libdmtcp.a; python3 {0}/dmtcp_static_gen -lib 1 `ls *.o`; rm *.o; cp *.nz {1}; rm *.nz'.format(d_bin_dir, tmp_dir, bad_cache_dir))
+os.system('python3 {0}/dmtcp_static_gen `pwd`/a.out {1}/dmtcp.wrapper.sym {1}/all_library_wrappers_dmtcp.nz'.format(d_bin_dir, tmp_dir))
