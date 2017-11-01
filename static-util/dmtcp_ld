@@ -29,11 +29,6 @@ print('Hello World;')
 if not os.path.isfile((su_dir+'/QWERASDF')):
     os.system("cd {0} && ./configure --enable-debug --enable-static && make -j && echo TMPHACK > {1}/QWERASDF".format(d_dir, su_dir))
 
-if not os.path.exists(d_bin_dir+'/dmtcp_replace_symbols_elf'):
-    os.system('make -C {0}'.format(su_dir))
-
-#os.system('rm -rf {0}/*.a {0}/*.nz {0}/*.o'.format(tmp_dir))
-
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 # Makedir /dmtcp_tmp
