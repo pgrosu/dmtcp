@@ -1,16 +1,18 @@
 #!/usr/bin/python3
-import os
+import os, tempfile
+import sys
 
-d_dir=os.path.expanduser('~/dmtcp')
+# Absolute path to the dmtcp root dir
+d_dir=os.path.expanduser(sys.argv[1])
 su_dir=d_dir+'/static-util'
 d_bin_dir=d_dir+'/bin'
 
 glibc='glibc-2.26'
 gbuild='glibc-build'
 
-tmp_dir='/tmp/static_dmtcp_tmp'
-cache_dir=tmp_dir+'/cache'
-bad_cache_dir=tmp_dir+'/badcache'
+tmp_dir = '/tmp/'
+cache_dir = ''
+bad_cache_dir = ''
 
 print('Hello World;')
 
@@ -24,18 +26,20 @@ print('Hello World;')
 
 # Temporary Hack
 if not os.path.isfile((su_dir+'/QWERASDF')):
-    os.system("cd {0} && ./configure 'CFLAGS=-g3 -O0 -DSTATIC_DMTCP=1' 'CXXFLAGS=-g3 -O0 -DSTATIC_DMTCP=1' && make -j && echo TMPHACK > {1}/QWERASDF".format(d_dir, su_dir))
+    os.system("cd {0} && ./configure --enable-debug --enable-static && make -j && echo TMPHACK > {1}/QWERASDF".format(d_dir, su_dir))
 
 if not os.path.exists(d_bin_dir+'/dmtcp_replace_symbols_elf'):
     os.system('make -C {0}'.format(su_dir))
 
-os.system('rm -rf {0}/*.a {0}/*.nz {0}/*.o'.format(tmp_dir))
+#os.system('rm -rf {0}/*.a {0}/*.nz {0}/*.o'.format(tmp_dir))
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 # Makedir /dmtcp_tmp
 try:
-    os.mkdir(tmp_dir)
+    tmp_dir = tempfile.mkdtemp()
+    cache_dir = tmp_dir + '/cache'
+    bad_cache_dir = tmp_dir + '/badcache'
 except OSError as e:
     pass
 try:
