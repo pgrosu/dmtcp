@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TMP_DMTCP_DIR_TMP=~/dmtcp
+TMP_DMTCP_DIR_TMP=$1
 
 # libdmtcp
 grep -sh MACRO\( ${TMP_DMTCP_DIR_TMP}/src/* |
