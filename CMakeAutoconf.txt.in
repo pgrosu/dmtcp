@@ -1,0 +1,59 @@
+# There shouldn't be any name conflicts with CMAKE since CMAKE variables
+#   begin with 'CMAKE_'
+
+SET( AC_CC "@CC@" )
+SET( AC_CFLAGS "@CFLAGS@" )
+SET( AC_CXX "@CXX@" )
+SET( AC_CXXFLAGS "@CXXFLAGS@" )
+SET( AC_CPP "@CPP@" )
+SET( AC_CPPFLAGS "@CPPFLAGS@" )
+SET( AC_LDFLAGS "@LDFLAGS@" )
+SET( AC_M32 "@M32@" )
+
+# For compatibility with autoconf values
+# See: https://cmake.org/Wiki/CMake_Useful_Variables#Compilers_and_Tools
+# Can be set by end user
+set( CMAKE_C_COMPILER ${AC_CC} )
+set( CMAKE_C_FLAGS ${AC_CFLAGS} )
+set( CMAKE_CXX_COMPILER ${AC_CXX} )
+set( CMAKE_CXX_FLAGS ${AC_CXXFLAGS} )
+message( CMAKE_C_COMPILER=${CMAKE_C_COMPILER} )
+message( CMAKE_C_FLAGS=${CMAKE_C_FLAGS} )
+message( CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} )
+message( CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} )
+message( M32=${M32} )
+
+SET( MKDIR_P "@MKDIR_P@" )
+SET( PACKAGE "@PACKAGE@" )
+SET( PACKAGE_BUGREPORT "@PACKAGE_BUGREPORT@" )
+SET( PACKAGE_NAME "@PACKAGE_NAME@" )
+SET( PACKAGE_STRING "@PACKAGE_STRING@" )
+SET( PACKAGE_TARNAME "@PACKAGE_TARNAME@" )
+SET( PACKAGE_URL "@PACKAGE_URL@" )
+SET( PACKAGE_VERSION "@PACKAGE_VERSION@" )
+SET( prefix "@prefix@" )
+SET( exec_prefix "@exec_prefix@" )
+SET( datarootdir "@datarootdir@" )
+SET( bindir "@bindir@" )
+SET( docdir "@docdir@" )
+SET( includedir "@includedir@" )
+SET( infodir "@infodir@" )
+SET( libdir "@libdir@" )
+SET( pkglibdir "$(libdir)/@PACKAGE@" )
+SET( top_builddir "@top_builddir@" )
+SET( top_srcdir "@top_srcdir@" )
+SET( srcdir "@srcdir@" )
+SET( VPATH "@srcdir@" )
+SET( targetdir "$(top_builddir)" )
+
+# These 'AC_' variables are to be set only by the maintainer, not the end user
+# They are required only by CMake
+set( AC_bindir "${bindir}" )
+set( AC_libdir "${pkglibdir}" )
+set( AC_package "${PACKAGE}" )
+set( AC_package_name "${PACKAGE_NAME}" )
+set( AC_package_url "${PACKAGE_URL}" )
+set( AC_package_version "${PACKAGE_VERSION}" )
+
+# Can be set by end user
+SET( CMAKE_INSTALL_PREFIX "${prefix}" )

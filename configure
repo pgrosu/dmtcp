@@ -672,6 +672,9 @@ HAS_READLINE
 M32
 CONFIG_M32_FALSE
 CONFIG_M32_TRUE
+HAS_MUTEX_WRAPPERS
+ENABLE_PTHREAD_MUTEX_WRAPPERS_FALSE
+ENABLE_PTHREAD_MUTEX_WRAPPERS_TRUE
 TEST_POSIX_MQ
 USE_TEST_SUITE
 FAST_RST_VIA_MMAP_FALSE
@@ -769,6 +772,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -799,7 +803,6 @@ enable_logging
 enable_debug
 enable_quiet
 enable_timing
-enable_static
 enable_realtime_ckpt_signal
 enable_unique_checkpoint_filenames
 enable_infiniband_support
@@ -810,6 +813,7 @@ enable_test_suite
 enable_experts_only_space1
 enable_experts_only
 enable_experts_only_after
+enable_pthread_mutex_wrappers
 enable_m32
 enable_static_libstdcxx
 with_mpich
@@ -864,6 +868,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
@@ -1116,6 +1121,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1253,7 +1267,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1406,6 +1420,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -1463,7 +1478,6 @@ Optional Features:
   --enable-timing         record checkpoint/restart timing information to
                           jtimings.csv, in working directory of
                           dmtcp_coordinator, and to stderr.
-  --enable-static-dmtcp   compile dmtcp for static linking
   --enable-realtime-ckpt-signal
                           Use a realtime signal (SIGRTMAX - 2) instead of the
                           default SIGUSR2 signal. The signal can be overridden
@@ -1491,6 +1505,8 @@ Optional Features:
                  === **** NOTE:  EXPERTS ONLY BELOW HERE **** ===
                           (Use at your own risk!!)
 
+  --enable-pthread-mutex-wrappers
+                          Recommended when using Open MPI
   --enable-m32            Compile in 32 bit mode on 64 bit linux. (Works on
                           most, but not all programs, due to restrictions of
                           32-bit mode.)
@@ -4941,17 +4957,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 ac_config_headers="$ac_config_headers include/config.h"
 
-ac_config_files="$ac_config_files Makefile contrib/Makefile contrib/ckptfile/Makefile contrib/infiniband/Makefile plugin/Makefile src/Makefile static-util/Makefile src/mtcp/Makefile src/plugin/Makefile include/dmtcp.h test/Makefile test/autotest_config.py test/plugin/Makefile"
-
-#bin_SCRIPTS = dmtcp_wrapper_symbols dmtcp_static_gen dmtcp_lib_symbols
-ac_config_links="$ac_config_links bin/dmtcp_wrapper_symbols:static-util/dmtcp_wrapper_symbols"
-
-ac_config_links="$ac_config_links bin/dmtcp_static_gen:static-util/dmtcp_static_gen"
-
-ac_config_links="$ac_config_links bin/dmtcp_lib_symbols:static-util/dmtcp_lib_symbols"
-
-ac_config_links="$ac_config_links bin/dmtcp_ld:static-util/dmtcp_ld"
-
+ac_config_files="$ac_config_files Makefile CMakeAutoconf.txt contrib/Makefile contrib/ckptfile/Makefile contrib/infiniband/Makefile plugin/Makefile src/Makefile src/mtcp/Makefile src/plugin/Makefile include/dmtcp.h test/Makefile test/autotest_config.py test/plugin/Makefile"
 
 #AC_CONFIG_FILES([test/credentials/Makefile])
 
@@ -5036,20 +5042,6 @@ fi
 if test "$use_jtiming" = "yes"; then
 
 $as_echo "#define TIMING 1" >>confdefs.h
-
-fi
-
-# Check whether --enable-static was given.
-if test "${enable_static+set}" = set; then :
-  enableval=$enable_static; use_static=$enableval
-else
-  use_static=no
-fi
-
-
-if test "$use_static" = "yes"; then
-
-$as_echo "#define STATIC_DMTCP 1" >>confdefs.h
 
 fi
 
@@ -5527,6 +5519,32 @@ if test "${enable_experts_only_after+set}" = set; then :
   enableval=$enable_experts_only_after;
 fi
 
+
+# Check whether --enable-pthread_mutex_wrappers was given.
+if test "${enable_pthread_mutex_wrappers+set}" = set; then :
+  enableval=$enable_pthread_mutex_wrappers; use_pthread_mutex_wrappers=$enableval
+else
+  use_pthread_mutex_wrappers=no
+fi
+
+ if test "$use_pthread_mutex_wrappers" = "yes"; then
+  ENABLE_PTHREAD_MUTEX_WRAPPERS_TRUE=
+  ENABLE_PTHREAD_MUTEX_WRAPPERS_FALSE='#'
+else
+  ENABLE_PTHREAD_MUTEX_WRAPPERS_TRUE='#'
+  ENABLE_PTHREAD_MUTEX_WRAPPERS_FALSE=
+fi
+
+if test "$use_pthread_mutex_wrappers" = "yes"; then
+
+$as_echo "#define ENABLE_PTHREAD_MUTEX_WRAPPERS 1" >>confdefs.h
+
+  HAS_MUTEX_WRAPPERS=yes
+
+else
+  HAS_MUTEX_WRAPPERS=no
+
+fi
 
 # Check whether --enable-m32 was given.
 if test "${enable_m32+set}" = set; then :
@@ -7580,6 +7598,10 @@ if test -z "${FAST_RST_VIA_MMAP_TRUE}" && test -z "${FAST_RST_VIA_MMAP_FALSE}"; 
   as_fn_error $? "conditional \"FAST_RST_VIA_MMAP\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${ENABLE_PTHREAD_MUTEX_WRAPPERS_TRUE}" && test -z "${ENABLE_PTHREAD_MUTEX_WRAPPERS_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_PTHREAD_MUTEX_WRAPPERS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${CONFIG_M32_TRUE}" && test -z "${CONFIG_M32_FALSE}"; then
   as_fn_error $? "conditional \"CONFIG_M32\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -8016,7 +8038,6 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
 config_headers="$ac_config_headers"
-config_links="$ac_config_links"
 config_commands="$ac_config_commands"
 
 _ACEOF
@@ -8046,9 +8067,6 @@ $config_files
 
 Configuration headers:
 $config_headers
-
-Configuration links:
-$config_links
 
 Configuration commands:
 $config_commands
@@ -8192,22 +8210,18 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "include/config.h") CONFIG_HEADERS="$CONFIG_HEADERS include/config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "CMakeAutoconf.txt") CONFIG_FILES="$CONFIG_FILES CMakeAutoconf.txt" ;;
     "contrib/Makefile") CONFIG_FILES="$CONFIG_FILES contrib/Makefile" ;;
     "contrib/ckptfile/Makefile") CONFIG_FILES="$CONFIG_FILES contrib/ckptfile/Makefile" ;;
     "contrib/infiniband/Makefile") CONFIG_FILES="$CONFIG_FILES contrib/infiniband/Makefile" ;;
     "plugin/Makefile") CONFIG_FILES="$CONFIG_FILES plugin/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "static-util/Makefile") CONFIG_FILES="$CONFIG_FILES static-util/Makefile" ;;
     "src/mtcp/Makefile") CONFIG_FILES="$CONFIG_FILES src/mtcp/Makefile" ;;
     "src/plugin/Makefile") CONFIG_FILES="$CONFIG_FILES src/plugin/Makefile" ;;
     "include/dmtcp.h") CONFIG_FILES="$CONFIG_FILES include/dmtcp.h" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
     "test/autotest_config.py") CONFIG_FILES="$CONFIG_FILES test/autotest_config.py" ;;
     "test/plugin/Makefile") CONFIG_FILES="$CONFIG_FILES test/plugin/Makefile" ;;
-    "bin/dmtcp_wrapper_symbols") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_wrapper_symbols:static-util/dmtcp_wrapper_symbols" ;;
-    "bin/dmtcp_static_gen") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_static_gen:static-util/dmtcp_static_gen" ;;
-    "bin/dmtcp_lib_symbols") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_lib_symbols:static-util/dmtcp_lib_symbols" ;;
-    "bin/dmtcp_ld") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_ld:static-util/dmtcp_ld" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -8221,7 +8235,6 @@ done
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
   test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
-  test "${CONFIG_LINKS+set}" = set || CONFIG_LINKS=$config_links
   test "${CONFIG_COMMANDS+set}" = set || CONFIG_COMMANDS=$config_commands
 fi
 
@@ -8519,7 +8532,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_HEADERS"
 
 
-eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS  :L $CONFIG_LINKS  :C $CONFIG_COMMANDS"
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
 shift
 for ac_tag
 do
@@ -8796,38 +8809,7 @@ $as_echo X"$_am_arg" |
 	  }
 	  s/.*/./; q'`/stamp-h$_am_stamp_count
  ;;
-  :L)
-  #
-  # CONFIG_LINK
-  #
 
-  if test "$ac_source" = "$ac_file" && test "$srcdir" = '.'; then
-    :
-  else
-    # Prefer the file from the source tree if names are identical.
-    if test "$ac_source" = "$ac_file" || test ! -r "$ac_source"; then
-      ac_source=$srcdir/$ac_source
-    fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: linking $ac_source to $ac_file" >&5
-$as_echo "$as_me: linking $ac_source to $ac_file" >&6;}
-
-    if test ! -r "$ac_source"; then
-      as_fn_error $? "$ac_source: file not found" "$LINENO" 5
-    fi
-    rm -f "$ac_file"
-
-    # Try a relative symlink, then a hard link, then a copy.
-    case $ac_source in
-    [\\/$]* | ?:[\\/]* ) ac_rel_source=$ac_source ;;
-	*) ac_rel_source=$ac_top_build_prefix$ac_source ;;
-    esac
-    ln -s "$ac_rel_source" "$ac_file" 2>/dev/null ||
-      ln "$ac_source" "$ac_file" 2>/dev/null ||
-      cp -p "$ac_source" "$ac_file" ||
-      as_fn_error $? "cannot link or copy $ac_source to $ac_file" "$LINENO" 5
-  fi
- ;;
   :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;

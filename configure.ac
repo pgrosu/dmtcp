@@ -27,24 +27,18 @@ AC_OPENMP
 AC_LANG_POP([C++])
 AC_CONFIG_HEADERS([include/config.h])
 AC_CONFIG_FILES([Makefile \
+                 CMakeAutoconf.txt \
                  contrib/Makefile \
                  contrib/ckptfile/Makefile \
                  contrib/infiniband/Makefile \
                  plugin/Makefile \
                  src/Makefile \
-                 static-util/Makefile \
                  src/mtcp/Makefile \
                  src/plugin/Makefile \
                  include/dmtcp.h \
                  test/Makefile \
                  test/autotest_config.py \
                  test/plugin/Makefile])
-#bin_SCRIPTS = dmtcp_wrapper_symbols dmtcp_static_gen dmtcp_lib_symbols
-AC_CONFIG_LINKS([bin/dmtcp_wrapper_symbols:static-util/dmtcp_wrapper_symbols])
-AC_CONFIG_LINKS([bin/dmtcp_static_gen:static-util/dmtcp_static_gen])
-AC_CONFIG_LINKS([bin/dmtcp_lib_symbols:static-util/dmtcp_lib_symbols])
-AC_CONFIG_LINKS([bin/dmtcp_ld:static-util/dmtcp_ld])
-
 #AC_CONFIG_FILES([test/credentials/Makefile])
 
 #AC_CONFIG_SUBDIRS([dmtcp])
@@ -119,16 +113,6 @@ AC_ARG_ENABLE([timing],
 
 if test "$use_jtiming" = "yes"; then
   AC_DEFINE([TIMING],[1],[Record timing information to stderr and jtimings.csv])
-fi
-
-AC_ARG_ENABLE([static],
-            [AS_HELP_STRING([--enable-static-dmtcp],
-                            [compile dmtcp for static linking])],
-            [use_static=$enableval],
-            [use_static=no])
-
-if test "$use_static" = "yes"; then
-  AC_DEFINE([STATIC_DMTCP],[1],[Compile DMTCP for static linking])
 fi
 
 AC_ARG_ENABLE([realtime_ckpt_signal],
@@ -270,6 +254,21 @@ AC_ARG_ENABLE([experts_only],
 			    [(Use at your own risk!!)])],
 	    [], [])
 AC_ARG_ENABLE([experts_only_after], [AS_HELP_STRING([ ], [])], [], [])
+
+AC_ARG_ENABLE([pthread_mutex_wrappers],
+            [AS_HELP_STRING([--enable-pthread-mutex-wrappers],
+                            [Recommended when using Open MPI])],
+            [use_pthread_mutex_wrappers=$enableval],
+            [use_pthread_mutex_wrappers=no])
+AM_CONDITIONAL(ENABLE_PTHREAD_MUTEX_WRAPPERS,
+               [test "$use_pthread_mutex_wrappers" = "yes"])
+if test "$use_pthread_mutex_wrappers" = "yes"; then
+  AC_DEFINE([ENABLE_PTHREAD_MUTEX_WRAPPERS],[1],[Enable pthread_mutex_* wrappers
+             for Open MPI])
+  AC_SUBST([HAS_MUTEX_WRAPPERS], [yes])
+else
+  AC_SUBST([HAS_MUTEX_WRAPPERS], [no])
+fi
 
 AC_ARG_ENABLE([m32],
             [AS_HELP_STRING([--enable-m32],

@@ -1,0 +1,59 @@
+# There shouldn't be any name conflicts with CMAKE since CMAKE variables
+#   begin with 'CMAKE_'
+
+SET( AC_CC "gcc" )
+SET( AC_CFLAGS "-g -O2" )
+SET( AC_CXX "g++" )
+SET( AC_CXXFLAGS "-g -O2" )
+SET( AC_CPP "gcc -E" )
+SET( AC_CPPFLAGS "" )
+SET( AC_LDFLAGS "" )
+SET( AC_M32 "0" )
+
+# For compatibility with autoconf values
+# See: https://cmake.org/Wiki/CMake_Useful_Variables#Compilers_and_Tools
+# Can be set by end user
+set( CMAKE_C_COMPILER ${AC_CC} )
+set( CMAKE_C_FLAGS ${AC_CFLAGS} )
+set( CMAKE_CXX_COMPILER ${AC_CXX} )
+set( CMAKE_CXX_FLAGS ${AC_CXXFLAGS} )
+message( CMAKE_C_COMPILER=${CMAKE_C_COMPILER} )
+message( CMAKE_C_FLAGS=${CMAKE_C_FLAGS} )
+message( CMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} )
+message( CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} )
+message( M32=${M32} )
+
+SET( MKDIR_P "/bin/mkdir -p" )
+SET( PACKAGE "dmtcp" )
+SET( PACKAGE_BUGREPORT "dmtcp-forum@lists.sourceforge.net" )
+SET( PACKAGE_NAME "DMTCP" )
+SET( PACKAGE_STRING "DMTCP 3.0.0" )
+SET( PACKAGE_TARNAME "dmtcp" )
+SET( PACKAGE_URL "http://dmtcp.sourceforge.net" )
+SET( PACKAGE_VERSION "3.0.0" )
+SET( prefix "/usr/local" )
+SET( exec_prefix "${prefix}" )
+SET( datarootdir "${prefix}/share" )
+SET( bindir "${exec_prefix}/bin" )
+SET( docdir "${datarootdir}/doc/${PACKAGE_TARNAME}" )
+SET( includedir "${prefix}/include" )
+SET( infodir "${datarootdir}/info" )
+SET( libdir "${exec_prefix}/lib" )
+SET( pkglibdir "$(libdir)/dmtcp" )
+SET( top_builddir "." )
+SET( top_srcdir "." )
+SET( srcdir "." )
+SET( VPATH "." )
+SET( targetdir "$(top_builddir)" )
+
+# These 'AC_' variables are to be set only by the maintainer, not the end user
+# They are required only by CMake
+set( AC_bindir "${bindir}" )
+set( AC_libdir "${pkglibdir}" )
+set( AC_package "${PACKAGE}" )
+set( AC_package_name "${PACKAGE_NAME}" )
+set( AC_package_url "${PACKAGE_URL}" )
+set( AC_package_version "${PACKAGE_VERSION}" )
+
+# Can be set by end user
+SET( CMAKE_INSTALL_PREFIX "${prefix}" )
