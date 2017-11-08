@@ -61,6 +61,7 @@ include_directories(include jalib)
 
 add_subdirectory(src)
 add_subdirectory(src/plugin)
+add_subdirectory(static-util)
 
 # =====================================================
 

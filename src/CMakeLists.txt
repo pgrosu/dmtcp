@@ -40,15 +40,22 @@ set(SOURCES_libjalib
     ../jalib/jalib.cpp;../jalib/jassert.cpp;../jalib/jbuffer.cpp;../jalib/jfilesystem.cpp;../jalib/jserialize.cpp;../jalib/jsocket.cpp;../jalib/jtimer.cpp;../jalib/jalloc.cpp
    )
 set(SOURCES_libsyscallsreal syscallsreal.c;trampolines.cpp)
-set(SOURCES_libdmtcp_a
-    dmtcpworker.cpp; threadsync.cpp; coordinatorapi.cpp; execwrappers.cpp; signalwrappers.cpp; terminal.cpp; alarm.cpp; threadwrappers.cpp; miscwrappers.cpp; ckptserializer.cpp; writeckpt.cpp; glibcsystem.cpp; threadlist.cpp; siginfo.cpp; dmtcpplugin.cpp; popen.cpp; syslogwrappers.cpp; dmtcp_dlsym.cpp; plugininfo.cpp; pluginmanager.cpp; dmtcpmessagetypes.cpp; workerstate.cpp; uniquepid.cpp; shareddata.cpp; util_exec.cpp; processinfo.cpp; procselfmaps.cpp; ../jalib/jalib.cpp;../jalib/jassert.cpp;../jalib/jbuffer.cpp;../jalib/jfilesystem.cpp;../jalib/jserialize.cpp;../jalib/jsocket.cpp;../jalib/jtimer.cpp;../jalib/jalloc.cpp; syscallsreal.c; trampolines.cpp; mtcp/restore_libc.c
+set(SOURCES_libdmtcp_static
+    dmtcpworker.cpp; threadsync.cpp; coordinatorapi.cpp; execwrappers.cpp; signalwrappers.cpp; terminal.cpp; alarm.cpp; threadwrappers.cpp; miscwrappers.cpp; ckptserializer.cpp; writeckpt.cpp; glibcsystem.cpp; threadlist.cpp; siginfo.cpp; dmtcpplugin.cpp; popen.cpp; syslogwrappers.cpp; dmtcp_dlsym.cpp; plugininfo.cpp; pluginmanager.cpp; dmtcpmessagetypes.cpp; workerstate.cpp; uniquepid.cpp; shareddata.cpp; util_exec.cpp; util_misc.cpp; util_init.cpp; jalibinterface.cpp; processinfo.cpp; procselfmaps.cpp; ../jalib/jalib.cpp; ../jalib/jassert.cpp; ../jalib/jbuffer.cpp; ../jalib/jfilesystem.cpp; ../jalib/jserialize.cpp; ../jalib/jsocket.cpp; ../jalib/jtimer.cpp; ../jalib/jalloc.cpp; syscallsreal.c; trampolines.cpp; mtcp/restore_libc.c
 )
 
 add_library(dmtcpinternal STATIC ${SOURCES_libdmtcpinternal})
 add_library(jalib STATIC ${SOURCES_libjalib})
 add_library(syscallsreal STATIC ${SOURCES_libsyscallsreal})
 add_library(nohijack STATIC ${SOURCES_libnohijack})
-add_library(dmtcp_a STATIC ${SOURCES_libdmtcp_a})
+
+add_library(dmtcp_static STATIC ${SOURCES_libdmtcp_static})
+INSTALL(
+  TARGETS dmtcp_static
+  ARCHIVE DESTINATION lib/dmtcp
+  LIBRARY DESTINATION lib/dmtcp
+  COMPONENT library
+)
 
 # =====================================================
 
@@ -171,7 +178,7 @@ add_custom_target(
 add_dependencies(private_install_${loop_var} ${DMTCP_EXECUTABLES})
 endforeach(loop_var)
 
-set(DMTCP_LIBS libdmtcp.so)
+set(DMTCP_LIBS libdmtcp.so libdmtcp_static.a)
 
 foreach(loop_var ${DMTCP_LIBS})
 add_custom_target(

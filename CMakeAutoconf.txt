@@ -2,11 +2,11 @@
 #   begin with 'CMAKE_'
 
 SET( AC_CC "gcc" )
-SET( AC_CFLAGS "-g -O2" )
+SET( AC_CFLAGS "-g -O2 -Wall -g3 -O0 -DDEBUG" )
 SET( AC_CXX "g++" )
-SET( AC_CXXFLAGS "-g -O2" )
+SET( AC_CXXFLAGS "-g -O2 -Wall -g3 -O0 -DDEBUG" )
 SET( AC_CPP "gcc -E" )
-SET( AC_CPPFLAGS "" )
+SET( AC_CPPFLAGS " -Wall -g3 -O0 -DDEBUG" )
 SET( AC_LDFLAGS "" )
 SET( AC_M32 "0" )
 
