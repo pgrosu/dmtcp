@@ -13,6 +13,16 @@ target_link_libraries(dmtcp_pid -Xlinker -znow  -Wl,--unresolved-symbols=ignore-
 target_include_directories(dmtcp_pid PRIVATE pid)
 INSTALL(TARGETS dmtcp_pid LIBRARY DESTINATION lib/dmtcp)
 
+add_library(dmtcp_pid_static STATIC ${SOURCES_libpid})
+set(DMTCP_PLUGINS ${DMTCP_PLUGINS} libdmtcp_pid_static.a)
+target_include_directories(dmtcp_pid_static PRIVATE pid)
+INSTALL(
+  TARGETS dmtcp_pid_static
+  ARCHIVE DESTINATION lib/dmtcp
+  LIBRARY DESTINATION lib/dmtcp
+  COMPONENT library
+)
+
 # =====================================================
 
 set(SOURCES_libipc
