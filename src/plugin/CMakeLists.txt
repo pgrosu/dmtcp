@@ -99,7 +99,7 @@ add_custom_target(
           # ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/bin
   # An alternative to copy is:  COMMAND ${CMAKE_COMMAND} create_symlink ...
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                              ${loop_var} ${CMAKE_SOURCE_DIR}/bin/
+                              ${loop_var} ${CMAKE_SOURCE_DIR}/bin/${loop_var}
   # This can be automated using BUILDSYSTEM_TARGETS, starting with CMAKE-3.7
   DEPENDS ${loop_var}
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/plugin # BINARY_DIR means "build dir"
@@ -119,7 +119,7 @@ add_custom_target(
   # COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/lib
   # COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/lib/dmtcp
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                              ${loop_var} ${CMAKE_SOURCE_DIR}/lib/dmtcp
+                              ${loop_var} ${CMAKE_SOURCE_DIR}/lib/dmtcp/${loop_var}
   # This can be automated using BUILDSYSTEM_TARGETS, starting with CMAKE-3.7
   # FIXME:  If we just use ${loop_var} for DEPENDS, uses wrong WORKING_DIR
   #         Is this a bug in CMAKE-3.3?
