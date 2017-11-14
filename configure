@@ -4969,6 +4969,8 @@ ac_config_links="$ac_config_links bin/dmtcp_lib_symbols:static-util/dmtcp_lib_sy
 
 ac_config_links="$ac_config_links bin/dmtcp_ld:static-util/dmtcp_ld"
 
+ac_config_links="$ac_config_links bin/dmtcp_ld_NORUNTIME:static-util/dmtcp_ld_NORUNTIME"
+
 #AC_CONFIG_FILES([test/credentials/Makefile])
 
 #AC_CONFIG_SUBDIRS([dmtcp])
@@ -8255,6 +8257,7 @@ do
     "bin/dmtcp_static_gen") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_static_gen:static-util/dmtcp_static_gen" ;;
     "bin/dmtcp_lib_symbols") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_lib_symbols:static-util/dmtcp_lib_symbols" ;;
     "bin/dmtcp_ld") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_ld:static-util/dmtcp_ld" ;;
+    "bin/dmtcp_ld_NORUNTIME") CONFIG_LINKS="$CONFIG_LINKS bin/dmtcp_ld_NORUNTIME:static-util/dmtcp_ld_NORUNTIME" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

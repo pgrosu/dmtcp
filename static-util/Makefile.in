@@ -175,8 +175,9 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/dmtcp_ld \
-	$(srcdir)/dmtcp_lib_symbols $(srcdir)/dmtcp_static_gen \
-	$(srcdir)/dmtcp_wrapper_symbols $(top_srcdir)/depcomp
+	$(srcdir)/dmtcp_ld_NORUNTIME $(srcdir)/dmtcp_lib_symbols \
+	$(srcdir)/dmtcp_static_gen $(srcdir)/dmtcp_wrapper_symbols \
+	$(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 AARCH64_HOST = @AARCH64_HOST@
 ACLOCAL = @ACLOCAL@
@@ -354,7 +355,7 @@ AM_CPPFLAGS =
 # headers:
 nobase_noinst_HEADERS = util.h
 __d_bindir__dmtcp_replace_symbols_elf_SOURCES = replace_symbols_elf.c util.c
-__d_bindir__dmtcp_replace_symbols_elf_LDADD =
+__d_bindir__dmtcp_replace_symbols_elf_LDADD = 
 all: all-am
 
 .SUFFIXES:

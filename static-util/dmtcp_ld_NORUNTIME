@@ -1,0 +1,81 @@
+#!/usr/bin/python3
+import os, tempfile, shutil
+import sys
+import argparse
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# HELPERS
+
+def create_dir(l):
+    print('/'.join([x for x in l]))
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# PARSE THE ARGUMENTS
+
+parser = argparse.ArgumentParser()
+
+#parser.add_argument("-v", "--verbosity", help="increase output verbosity")
+parser.add_argument('--objs', nargs='+')
+parser.add_argument('--libs', nargs='+')
+parser.add_argument('--dmtcp', nargs='+')
+
+# Parse
+args = parser.parse_args()
+
+# Save the arguments in this dictionary
+arg_dict = {'objs':[], 'libs':[], 'dmtcp':[]}
+
+# Print args
+for key, value in parser.parse_args()._get_kwargs():
+    if key in arg_dict:
+        arg_dict[key] = value
+    else:
+        sys.exit('*** *** *** Need Argument(s): --{} {} !!!'.format(key, value))
+
+print (arg_dict)
+
+# Set some directory variables
+if arg_dict['dmtcp'] is None:
+    sys.exit('*** *** *** Please provide --dmtcp_directory')
+
+dir_dmtcp           = os.path.abspath(arg_dict['dmtcp'][0])
+dir_dmtcp_su        = os.path.join(dir_dmtcp, 'static-util')
+dir_dmtcp_bin       = '{}/{}'.format(dir_dmtcp, 'bin')
+glibc               = 'glibc-2.26'
+dir_dmtcp_su_glibc  = '{}/{}'.format(dir_dmtcp_su, glibc)
+gbuild              = 'glibc-build'
+dir_dmtcp_su_gbuild = '{}/{}'.format(dir_dmtcp_su, gbuild)
+
+create_dir(['a','b','c'])
+
+print(dir_dmtcp)
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# BUILD GLIBC WITH --enable-static-nss
+
+print(os.path.isdir(dir_dmtcp))
+print(os.path.isdir(dir_dmtcp_su))
+print(os.path.isdir(dir_dmtcp_su2))
+print (dir_dmtcp_su_glibc, os.path.isdir(dir_dmtcp_su_glibc.strip()))
+#if not os.path.isdir(dir_dmtcp_su_glibc):
+#    os.system('tar -xvzf {0}.tar.gz {0}'.format(glibc))
+#
+#if not os.path.isdir(dir_dmtcp_su_gbuild):
+#    os.mkdir(dir_dmtcp_su_gbuild)
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+# Automate this later - REPLACING THE LIBRARY AND OBJECT SYMBOLS
+try:
+    dir_tmp = tempfile.mkdtemp()
+except OSError as e:
+    sys.exit(e)
+
+print (dir_tmp)
+
+# Close dir_tmp
+shutil.rmtree(dir_tmp)
+
