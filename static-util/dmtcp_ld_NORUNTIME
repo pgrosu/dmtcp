@@ -7,8 +7,8 @@ import argparse
 
 # HELPERS
 
-def create_dir(l):
-    print('/'.join([x for x in l]))
+def create_dir_str(l):
+    print('Create Dir Str:', '/'.join([x for x in l]))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -33,13 +33,11 @@ for key, value in parser.parse_args()._get_kwargs():
         arg_dict[key] = value
     else:
         sys.exit('*** *** *** Need Argument(s): --{} {} !!!'.format(key, value))
-
-print (arg_dict)
+print ('Arguments', arg_dict)
 
 # Set some directory variables
 if arg_dict['dmtcp'] is None:
     sys.exit('*** *** *** Please provide --dmtcp_directory')
-
 dir_dmtcp           = os.path.abspath(arg_dict['dmtcp'][0])
 dir_dmtcp_su        = os.path.join(dir_dmtcp, 'static-util')
 dir_dmtcp_bin       = '{}/{}'.format(dir_dmtcp, 'bin')
@@ -48,34 +46,38 @@ dir_dmtcp_su_glibc  = '{}/{}'.format(dir_dmtcp_su, glibc)
 gbuild              = 'glibc-build'
 dir_dmtcp_su_gbuild = '{}/{}'.format(dir_dmtcp_su, gbuild)
 
-create_dir(['a','b','c'])
-
-print(dir_dmtcp)
+create_dir_str([dir_dmtcp, 'bin'])
+print('dir_dmtcp:', dir_dmtcp)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # BUILD GLIBC WITH --enable-static-nss
 
-print(os.path.isdir(dir_dmtcp))
-print(os.path.isdir(dir_dmtcp_su))
-print(os.path.isdir(dir_dmtcp_su2))
-print (dir_dmtcp_su_glibc, os.path.isdir(dir_dmtcp_su_glibc.strip()))
-#if not os.path.isdir(dir_dmtcp_su_glibc):
-#    os.system('tar -xvzf {0}.tar.gz {0}'.format(glibc))
-#
-#if not os.path.isdir(dir_dmtcp_su_gbuild):
-#    os.mkdir(dir_dmtcp_su_gbuild)
+if not os.path.isdir(dir_dmtcp_su_glibc):
+    os.system('tar -xvzf {0}.tar.gz {0}'.format(glibc))
+
+if not os.path.isdir(dir_dmtcp_su_gbuild):
+    os.mkdir(dir_dmtcp_su_gbuild)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Automate this later - REPLACING THE LIBRARY AND OBJECT SYMBOLS
+
+# Create dir_tmp, which is a temporary directory in /tmp
 try:
     dir_tmp = tempfile.mkdtemp()
+    print ('Created dir_tmp:', dir_tmp)
 except OSError as e:
     sys.exit(e)
 
-print (dir_tmp)
+# Symbols that need WRAPPING
+# os.system('cd {0}; {1}/dmtcp_wrapper_symbols {2}'.format(tmp_dir, d_bin_dir, d_dir))
+
+# Copy over archives
+
+# Run RSE on each archive
 
 # Close dir_tmp
+print ('Closing dir_tmp:', dir_tmp)
 shutil.rmtree(dir_tmp)
 
