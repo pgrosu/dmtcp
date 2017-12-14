@@ -58,22 +58,27 @@ if not os.path.isdir(dir_dmtcp_su_glibc):
 
 if not os.path.isdir(dir_dmtcp_su_gbuild):
     os.mkdir(dir_dmtcp_su_gbuild)
+    os.system('{0}/configure --prefix={1} --enable-static-nss && make -j -C {1}'.format(dir_dmtcp_su_glibc, dir_dmtcp_su_gbuild))
+    print ('Made custom glibc')
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Automate this later - REPLACING THE LIBRARY AND OBJECT SYMBOLS
 
 # Create dir_tmp, which is a temporary directory in /tmp
+# *** *** Use 'with' instead of try/except
 try:
     dir_tmp = tempfile.mkdtemp()
     print ('Created dir_tmp:', dir_tmp)
 except OSError as e:
     sys.exit(e)
 
-# Symbols that need WRAPPING
+# Generate symbols that need WRAPPING
 # os.system('cd {0}; {1}/dmtcp_wrapper_symbols {2}'.format(tmp_dir, d_bin_dir, d_dir))
 
 # Copy over archives
+for libxxx in ['libc.a', 'nptl/libpthread.a']:
+    os.system('cp {0}/{1} {2}'.format(dir_dmtcp_su_gbuild, libxxx, dir_tmp))
 
 # Run RSE on each archive
 
