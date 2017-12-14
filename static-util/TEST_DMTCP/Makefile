@@ -1,5 +1,5 @@
-#DIR=~/diffdmtcp/dmtcp
-DIR=~/dmtcp
+DIR=~/diffdmtcp/dmtcp
+#DIR=~/dmtcp
 
 default:
 	gcc -g -O0 -c main.c
