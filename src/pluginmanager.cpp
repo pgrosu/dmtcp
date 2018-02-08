@@ -9,7 +9,7 @@
 #include "util.h"
 
 #ifdef STATIC_DMTCP
-# include "static_dmtcp.h"
+ # include "static_dmtcp.h"
 #endif // ifndef STATIC_DMTCP
 
 static const char *firstRestartBarrier = "DMTCP::RESTART";

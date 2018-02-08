@@ -39,7 +39,7 @@
 #include "util.h"
 
 #ifdef STATIC_DMTCP
-# include "static_dmtcp.h"
+ # include "static_dmtcp.h"
 #endif // ifndef STATIC_DMTCP
 
 #define DEV_ZERO_DELETED_STR "/dev/zero (deleted)"

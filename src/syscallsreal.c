@@ -244,7 +244,7 @@ static int dmtcp_wrappers_initialized = 0;
 
 #ifdef STATIC_DMTCP
 #define GET_FUNC_ADDR(name) \
-  _real_func_addr[ENUM(name)] = dmtcp_sdlsym(#name, (void *)&name, STATIC_PLUGIN_ID, name##addrs);
+  _real_func_addr[ENUM(name)] = (void *)&name;//dmtcp_sdlsym(#name, (void *)&name, STATIC_PLUGIN_ID, name##addrs);
 #else
 #define GET_FUNC_ADDR(name) \
   _real_func_addr[ENUM(name)] = dmtcp_dlsym(RTLD_NEXT, #name);
@@ -267,7 +267,7 @@ initialize_libc_wrappers()
 
   /* On some arm machines, the newest pthread_create has version GLIBC_2.4 */
 #ifdef STATIC_DMTCP
-  void *addr = dmtcp_sdlsym("pthread_create", (void *)&pthread_create, STATIC_PLUGIN_ID, pthread_createaddrs);
+  void *addr = (void *)&pthread_create;//dmtcp_sdlsym("pthread_create", (void *)&pthread_create, STATIC_PLUGIN_ID, pthread_createaddrs);
 #else
   void *addr = dmtcp_dlvsym(RTLD_NEXT, "pthread_create", "GLIBC_2.4");
 #endif
